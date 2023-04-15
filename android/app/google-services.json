@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "688047279488",
+    "project_id": "portfolio-bce4c",
+    "storage_bucket": "portfolio-bce4c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688047279488:android:f0704bed692c71faaa0565",
+        "android_client_info": {
+          "package_name": "com.example.portfolio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "688047279488-oo2grlu2sqdgdtnqel55jpde701fums4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY26yzjrksG94h61x4IJmvTWzGdxli2bk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "688047279488-oo2grlu2sqdgdtnqel55jpde701fums4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

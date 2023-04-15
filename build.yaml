@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        generate_for:
+          - lib/**.model.dart
+        options:
+          explicit_to_json: true
+      freezed:
+        generate_for:
+          - lib/**.model.dart
+      riverpod_generator:
+        generate_for:
+          - lib/**.state.dart
+      mockito:mockBuilder:
+        enabled: false

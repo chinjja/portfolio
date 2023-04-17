@@ -55,11 +55,20 @@ class AppRouter extends GoRouter {
             ),
           ],
           redirect: (context, state) {
-            final loc = state.location;
-            final user = ref.read(getCurrentUserProvider);
-            if (loc == '/') return '/dashboard';
-            if (loc == '/login' && user != null) {
-              return state.queryParams['redirect'];
+            final subloc = state.subloc;
+            final loggedIn = ref.read(getCurrentUserProvider) != null;
+            final loggingIn = subloc == '/login';
+
+            if (subloc == '/') return '/dashboard';
+            if (!loggingIn && !subloc.startsWith('/chats')) {
+              return null;
+            }
+            final from = subloc == '/' ? '' : '?from=${state.location}';
+            if (!loggedIn) {
+              return loggingIn ? null : '/login$from';
+            }
+            if (loggingIn) {
+              return state.queryParams['from'] ?? '/';
             }
             return null;
           },

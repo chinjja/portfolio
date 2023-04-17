@@ -18,10 +18,6 @@ class GetCurrentUser extends _$GetCurrentUser {
     });
     return FirebaseAuth.instance.currentUser;
   }
-
-  void updateUser(User? user) {
-    state = user;
-  }
 }
 
 @riverpod
@@ -34,9 +30,7 @@ class Login extends _$Login {
   Future<void> login() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      final res = await ref.read(userServiceProvider).login();
-      ref.read(getCurrentUserProvider.notifier).updateUser(res);
-      return res;
+      return await ref.read(userServiceProvider).login();
     });
   }
 
@@ -44,7 +38,6 @@ class Login extends _$Login {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(userServiceProvider).logout();
-      ref.read(getCurrentUserProvider.notifier).updateUser(null);
       return null;
     });
   }

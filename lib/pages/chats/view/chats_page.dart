@@ -10,6 +10,7 @@ class ChatsPage extends HookConsumerWidget {
   const ChatsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(getCurrentUserProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('채팅'),
@@ -23,9 +24,10 @@ class ChatsPage extends HookConsumerWidget {
         ],
       ),
       body: Column(
-        children: const [
-          _Logout(),
-          Expanded(child: ChatsView()),
+        children: [
+          Text(user?.displayName ?? ''),
+          const _Logout(),
+          const Expanded(child: ChatsView()),
         ],
       ),
     );
@@ -84,18 +86,13 @@ class _Logout extends HookConsumerWidget {
       );
     });
     final loading = ref.watch(loginProvider).isLoading;
-    final user = ref.watch(getCurrentUserProvider);
     return FilledButton(
       onPressed: loading
           ? null
           : () {
-              if (user == null) {
-                context.push('/login?redirect=/projects');
-              } else {
-                ref.read(loginProvider.notifier).logout();
-              }
+              ref.read(loginProvider.notifier).logout();
             },
-      child: user == null ? const Text('Login') : const Text('Logout'),
+      child: const Text('Logout'),
     );
   }
 }

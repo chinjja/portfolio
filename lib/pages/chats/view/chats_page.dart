@@ -4,38 +4,33 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
+import 'package:portfolio/services/services/chat_service.dart';
 import 'package:portfolio/widgets/widgets.dart';
 
 class ChatsPage extends HookConsumerWidget {
   const ChatsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isOnwer = ref.watch(isOwnerProvider);
     final user = ref.watch(getCurrentUserProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('채팅'),
         actions: [
-          IconButton(
-            onPressed: () {
-              context.go('/chats/add');
-            },
-            icon: const Icon(Icons.add),
-          ),
+          if (user != null) ...[
+            const _Logout(),
+            const _Add(),
+          ],
         ],
       ),
-      body: Column(
-        children: [
-          Text(user?.displayName ?? ''),
-          const _Logout(),
-          const Expanded(child: ChatsView()),
-        ],
-      ),
+      body: isOnwer ? const _ChatList() : const SizedBox(),
     );
   }
 }
 
-class ChatsView extends HookConsumerWidget {
-  const ChatsView({super.key});
+class _ChatList extends HookConsumerWidget {
+  const _ChatList();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chats = ref.watch(getChatsProvider);
@@ -86,13 +81,47 @@ class _Logout extends HookConsumerWidget {
       );
     });
     final loading = ref.watch(loginProvider).isLoading;
-    return FilledButton(
+    return TextButton(
       onPressed: loading
           ? null
           : () {
               ref.read(loginProvider.notifier).logout();
             },
       child: const Text('Logout'),
+    );
+  }
+}
+
+class _Add extends HookConsumerWidget {
+  const _Add({super.key});
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(getCurrentUserProvider);
+    if (user == null) return const SizedBox.shrink();
+
+    final provider = createDirectChatProvider(user.uid);
+    ref.listen(
+      provider,
+      (previous, next) {
+        next.whenOrNull(
+          data: (data) {
+            context.go('/chats/${data!.id}');
+          },
+          error: (error, stackTrace) {
+            context.showSnackbarOk(error.toString());
+          },
+        );
+      },
+    );
+
+    final loading = ref.watch(provider).isLoading;
+    return IconButton(
+      onPressed: loading
+          ? null
+          : () {
+              ref.read(provider.notifier).create();
+            },
+      icon: const Icon(Icons.add),
     );
   }
 }

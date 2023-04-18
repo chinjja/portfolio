@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:portfolio/app/app.dart';
-import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/widgets/widgets.dart';
 
@@ -16,7 +14,7 @@ class ChatPage extends HookConsumerWidget {
     final chat = ref.watch(getChatProvider(id)).valueOrNull;
     return Scaffold(
       appBar: AppBar(
-        title: Text(chat?.name ?? ''),
+        title: Text(chat?.id ?? ''),
       ),
       body: ChatView(id: id),
     );

@@ -43,6 +43,24 @@ class Login extends _$Login {
   }
 }
 
+@riverpod
+class GetOwnerUid extends _$GetOwnerUid {
+  @override
+  Stream<String> build() {
+    return ref.read(userServiceProvider).ownerUid;
+  }
+}
+
+@riverpod
+class IsOwner extends _$IsOwner {
+  @override
+  bool build() {
+    final user = ref.watch(getCurrentUserProvider);
+    final ownerUid = ref.watch(getOwnerUidProvider).valueOrNull;
+    return user != null && user.uid == ownerUid;
+  }
+}
+
 final refreshRouterProvider =
     ChangeNotifierProvider((ref) => RefreshRouter(ref));
 

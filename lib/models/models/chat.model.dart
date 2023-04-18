@@ -15,6 +15,18 @@ class Chat with _$Chat {
 }
 
 @freezed
+class ChatUser with _$ChatUser {
+  const factory ChatUser({
+    @Default('') String id,
+    @Default('') String uid,
+    @Default('') String type,
+    required String chatId,
+  }) = _ChatUser;
+
+  factory ChatUser.fromJson(Json json) => _$ChatUserFromJson(json);
+}
+
+@freezed
 class ChatMessage with _$ChatMessage {
   const factory ChatMessage({
     @Default('') String id,

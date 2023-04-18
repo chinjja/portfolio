@@ -47,3 +47,31 @@ class CreateDirectChat extends _$CreateDirectChat {
     });
   }
 }
+
+@riverpod
+class GetMessagesByChatId extends _$GetMessagesByChatId {
+  @override
+  Stream<List<ChatMessage>> build(String chatId) {
+    return ref.read(chatServiceProvider).watchMessages(chatId: chatId);
+  }
+}
+
+@riverpod
+class SendMessage extends _$SendMessage {
+  @override
+  FutureOr<ChatMessage?> build(String chatId) {
+    return null;
+  }
+
+  Future<void> send(String message) async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      final user = ref.read(getCurrentUserProvider);
+      return ref.read(chatServiceProvider).sendMessage(
+            chatId: chatId,
+            uid: user!.uid,
+            message: message,
+          );
+    });
+  }
+}

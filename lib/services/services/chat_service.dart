@@ -97,8 +97,8 @@ class ChatService {
     return chat;
   }
 
-  Future<void> send({
-    required Chat chat,
+  Future<ChatMessage> sendMessage({
+    required String chatId,
     required String uid,
     required String message,
   }) async {
@@ -107,16 +107,17 @@ class ChatService {
     final chatMessage = ChatMessage(
       id: id,
       uid: uid,
-      chatId: chat.id,
+      chatId: chatId,
       message: message,
       date: DateTime.now(),
     );
     await firestore
         .collection(_chats)
-        .doc(chat.id)
+        .doc(chatId)
         .collection('messages')
         .doc(id)
         .set(chatMessage.toJson());
+    return chatMessage;
   }
 
   Stream<List<ChatMessage>> watchMessages({

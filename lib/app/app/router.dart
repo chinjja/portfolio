@@ -1,13 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
+
+final _root = GlobalKey<NavigatorState>();
 
 class AppRouter extends GoRouter {
   AppRouter({
     required WidgetRef ref,
     super.initialLocation,
   }) : super(
+          navigatorKey: _root,
           routes: [
             ShellRoute(
               builder: (context, state, child) => HomePage(child: child),
@@ -41,9 +45,10 @@ class AppRouter extends GoRouter {
                   builder: (context, state) => const ChatsPage(),
                   routes: [
                     GoRoute(
+                      parentNavigatorKey: _root,
                       path: ':id',
                       builder: (context, state) =>
-                          ChatPage(id: state.params['id']!),
+                          ChatPage(chatId: state.params['id']!),
                     ),
                   ],
                 ),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/dashboard/dashboard.dart';
 import 'package:portfolio/pages/dashboard/view/dashboard_form.dart';
+import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/widgets/widgets.dart';
 
 class DashboardPage extends ConsumerWidget {
@@ -10,22 +11,24 @@ class DashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isOwner = ref.watch(isOwnerProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
         actions: [
-          IconButton(
-              onPressed: () {
-                final dashboard = ref.read(dashboardsProvider).requireValue;
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        DashboardForm(initialValue: dashboard),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.edit)),
+          if (isOwner)
+            IconButton(
+                onPressed: () {
+                  final dashboard = ref.read(dashboardsProvider).requireValue;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DashboardForm(initialValue: dashboard),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit)),
         ],
       ),
       body: const DashboardView(),

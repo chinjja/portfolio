@@ -9,16 +9,18 @@ class ProjectsPage extends HookConsumerWidget {
   const ProjectsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isOwner = ref.watch(isOwnerProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('프로젝트'),
         actions: [
-          IconButton(
-            onPressed: () {
-              context.go('/projects/add');
-            },
-            icon: const Icon(Icons.add),
-          ),
+          if (isOwner)
+            IconButton(
+              onPressed: () {
+                context.go('/projects/add');
+              },
+              icon: const Icon(Icons.add),
+            ),
         ],
       ),
       body: const ProjectsView(),

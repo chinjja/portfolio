@@ -34,6 +34,7 @@ class AppRouter extends GoRouter {
                           ProjectForm(initialValue: state.extra as Project),
                     ),
                     GoRoute(
+                      parentNavigatorKey: _root,
                       path: ':id',
                       builder: (context, state) =>
                           ProjectPage(id: state.params['id']!),

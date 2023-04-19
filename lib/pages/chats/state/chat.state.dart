@@ -23,10 +23,10 @@ class GetChats extends _$GetChats {
 }
 
 @riverpod
-class GetChatIdsByUid extends _$GetChatIdsByUid {
+class GetChatsByUid extends _$GetChatsByUid {
   @override
-  Stream<List<String>> build(String uid) {
-    return ref.read(chatServiceProvider).watchChatIdsByUid(uid: uid);
+  Stream<List<Chat>> build(String uid) {
+    return ref.read(chatServiceProvider).watchChatsByUid(uid: uid);
   }
 }
 

@@ -37,7 +37,7 @@ class ChatService {
     return Chat.fromJson(res.data()!);
   }
 
-  Stream<List<String>> watchChatIdsByUid({
+  Stream<List<Chat>> watchChatsByUid({
     required String uid,
   }) {
     final firestore = ref.read(firebaseFirestoreProvider);
@@ -46,23 +46,26 @@ class ChatService {
         .where('uid', isEqualTo: uid)
         .snapshots()
         .map((e) => e.docs)
-        .flatMap((e) => Stream.fromIterable(e)
+        .flatMap((e) => Stream.value(e).map((e) => e
             .map((e) => e.data())
-            .map((e) => e['chatId']));
+            .map((json) => Chat(id: json['chatId']))
+            .toSet()
+            .toList()));
   }
 
-  Future<String?> getChatIdByUid({
+  Future<Chat?> getDirectChat({
     required String uid,
-    required String type,
+    required String to,
   }) async {
     final firestore = ref.read(firebaseFirestoreProvider);
     final res = await firestore
         .collection(_chatUsers)
         .where('uid', isEqualTo: uid)
-        .where('type', isEqualTo: type)
+        .where('type', isEqualTo: to)
         .get();
     if (res.size == 0) return null;
-    return res.docs.first.data()['chatId'];
+    final chatId = res.docs.first.data()['chatId'];
+    return Chat(id: chatId);
   }
 
   Future<Chat> createDirectChat({
@@ -70,10 +73,9 @@ class ChatService {
     required String to,
   }) async {
     final firestore = ref.read(firebaseFirestoreProvider);
-    final chatId = await getChatIdByUid(uid: uid, type: to);
-    if (chatId != null) {
-      final res = await getById(chatId);
-      if (res != null) return res;
+    final chat1 = await getDirectChat(uid: uid, to: to);
+    if (chat1 != null) {
+      return chat1;
     }
     final uuid = ref.read(uuidProvider);
     final chat = Chat(id: uuid.v4(), name: '');

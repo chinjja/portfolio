@@ -4,14 +4,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
-import 'package:portfolio/services/services/chat_service.dart';
 import 'package:portfolio/widgets/widgets.dart';
 
 class ChatsPage extends HookConsumerWidget {
   const ChatsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isOnwer = ref.watch(isOwnerProvider);
     final user = ref.watch(getCurrentUserProvider);
 
     return Scaffold(
@@ -24,7 +22,7 @@ class ChatsPage extends HookConsumerWidget {
           ],
         ],
       ),
-      body: isOnwer ? const _ChatList() : const SizedBox(),
+      body: const _ChatList(),
     );
   }
 }
@@ -33,7 +31,8 @@ class _ChatList extends HookConsumerWidget {
   const _ChatList();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chats = ref.watch(getChatsProvider);
+    final user = ref.watch(getCurrentUserProvider);
+    final chats = ref.watch(getChatsByUidProvider(user!.uid));
     return chats.when(
       loading: () => const LoadingView(),
       error: (error, stackTrace) => Text(error.toString()),
@@ -121,7 +120,7 @@ class _Add extends HookConsumerWidget {
           : () {
               ref.read(provider.notifier).create();
             },
-      icon: const Icon(Icons.add),
+      icon: const Icon(Icons.send),
     );
   }
 }

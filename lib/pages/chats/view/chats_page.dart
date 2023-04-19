@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
@@ -55,9 +56,31 @@ class ChatTile extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final avatarUrl = ref.watch(getChatAvatarUrlProvider(chat.id)).valueOrNull;
+    final title = ref.watch(getChatTitleProvider(chat.id)).valueOrNull;
+    final latestMessage =
+        ref.watch(getLatestMessagesByChatIdProvider(chat.id)).valueOrNull;
     return ListTile(
-      title: Text(chat.id),
-      subtitle: Text(chat.name),
+      leading: SizedBox(
+        width: 48,
+        height: 48,
+        child: CircleAvatar(
+          backgroundImage: avatarUrl == null ? null : NetworkImage(avatarUrl),
+        ),
+      ),
+      title: Row(
+        children: [
+          Text(title ?? '제목없음'),
+          const SizedBox(width: 12),
+          Text(
+            DateFormat.yMd()
+                .add_jm()
+                .format(latestMessage?.date ?? DateTime.now()),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+      subtitle: Text(latestMessage?.message ?? '', maxLines: 1),
       onTap: () {
         context.go('/chats/${chat.id}');
       },

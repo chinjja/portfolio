@@ -54,6 +54,22 @@ class ChatService {
             .toList()));
   }
 
+  Stream<List<ChatUser>> watchChatUsersByChatId({
+    required String chatId,
+  }) {
+    final firestore = ref.read(firebaseFirestoreProvider);
+
+    return firestore
+        .collection(_chatUsers)
+        .where('chatId', isEqualTo: chatId)
+        .snapshots()
+        .map((e) => e.docs)
+        .flatMap((e) => Stream.value(e).map((e) => e
+            .map((e) => e.data())
+            .map((json) => ChatUser.fromJson(json))
+            .toList()));
+  }
+
   Future<Chat?> getDirectChat({
     required String uid,
     required String to,
@@ -140,5 +156,20 @@ class ChatService {
         .orderBy('date', descending: true)
         .snapshots()
         .map((e) => e.docs.map((e) => ChatMessage.fromJson(e.data())).toList());
+  }
+
+  Stream<ChatMessage?> watchLatestMessage({
+    required String chatId,
+  }) {
+    final firestore = ref.read(firebaseFirestoreProvider);
+    return firestore
+        .collection(_chats)
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('date', descending: true)
+        .limit(1)
+        .snapshots()
+        .map((e) => e.docs)
+        .map((e) => e.isEmpty ? null : ChatMessage.fromJson(e.first.data()));
   }
 }

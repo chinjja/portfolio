@@ -13,10 +13,10 @@ class ChatPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chat = ref.watch(getChatProvider(chatId)).valueOrNull;
+    final title = ref.watch(getChatTitleProvider(chatId)).valueOrNull;
     return Scaffold(
       appBar: AppBar(
-        title: Text(chat?.id ?? ''),
+        title: Text(title ?? '제목없음'),
       ),
       body: ChatView(chatId: chatId),
     );

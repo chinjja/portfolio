@@ -57,6 +57,14 @@ class GetMessagesByChatId extends _$GetMessagesByChatId {
 }
 
 @riverpod
+class GetLatestMessagesByChatId extends _$GetLatestMessagesByChatId {
+  @override
+  Stream<ChatMessage?> build(String chatId) {
+    return ref.read(chatServiceProvider).watchLatestMessage(chatId: chatId);
+  }
+}
+
+@riverpod
 class SendMessage extends _$SendMessage {
   @override
   FutureOr<ChatMessage?> build(String chatId) {
@@ -81,5 +89,39 @@ class MemberByUid extends _$MemberByUid {
   @override
   FutureOr<Member?> build(String uid) async {
     return await ref.read(userServiceProvider).getMemberByUid(uid);
+  }
+}
+
+@riverpod
+class GetChatUsersByChatId extends _$GetChatUsersByChatId {
+  @override
+  Stream<List<ChatUser>> build(String chatId) {
+    return ref.read(chatServiceProvider).watchChatUsersByChatId(chatId: chatId);
+  }
+}
+
+@riverpod
+class GetChatTitle extends _$GetChatTitle {
+  @override
+  FutureOr<String> build(String chatId) async {
+    final user = ref.watch(getCurrentUserProvider);
+    final chatUsers =
+        ref.watch(getChatUsersByChatIdProvider(chatId)).valueOrNull ?? [];
+    final others = chatUsers.where((e) => e.uid != user?.uid).toList();
+    return others.map((e) => e.displayName ?? '이름없음').join(', ');
+  }
+}
+
+@riverpod
+class GetChatAvatarUrl extends _$GetChatAvatarUrl {
+  @override
+  FutureOr<String?> build(String chatId) async {
+    final user = ref.watch(getCurrentUserProvider);
+    final chatUsers =
+        ref.watch(getChatUsersByChatIdProvider(chatId)).valueOrNull ?? [];
+    final others = chatUsers.where((e) => e.uid != user?.uid).toList();
+    final list = others.take(1).map((e) => e.photoUrl);
+    if (list.isEmpty) return null;
+    return list.first;
   }
 }

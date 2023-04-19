@@ -92,7 +92,7 @@ class _Logout extends HookConsumerWidget {
   const _Logout();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen(loginProvider, (previous, next) {
+    ref.listen(logoutProvider, (previous, next) {
       next.whenOrNull(
         data: (data) {
           context.go('/');
@@ -102,12 +102,12 @@ class _Logout extends HookConsumerWidget {
         },
       );
     });
-    final loading = ref.watch(loginProvider).isLoading;
+    final loading = ref.watch(logoutProvider).isLoading;
     return TextButton(
       onPressed: loading
           ? null
           : () {
-              ref.read(loginProvider.notifier).logout();
+              ref.read(logoutProvider.notifier).logout();
             },
       child: const Text('Logout'),
     );

@@ -33,6 +33,14 @@ class Login extends _$Login {
       return await ref.read(userServiceProvider).login();
     });
   }
+}
+
+@riverpod
+class Logout extends _$Logout {
+  @override
+  FutureOr<User?> build() {
+    return null;
+  }
 
   Future<void> logout() async {
     state = const AsyncValue.loading();

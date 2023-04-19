@@ -16,25 +16,17 @@ class LoginPage extends HookConsumerWidget {
       );
     });
     final loading = ref.watch(loginProvider).isLoading;
-    final user = ref.watch(getCurrentUserProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Portfolio')),
-      body: Column(
-        children: [
-          Text(user?.displayName ?? 'no user'),
-          FilledButton(
-            onPressed: loading
-                ? null
-                : () {
-                    if (user == null) {
-                      ref.read(loginProvider.notifier).login();
-                    } else {
-                      ref.read(loginProvider.notifier).logout();
-                    }
-                  },
-            child: user == null ? const Text('Login') : const Text('Logout'),
-          ),
-        ],
+      body: Center(
+        child: FilledButton(
+          onPressed: loading
+              ? null
+              : () {
+                  ref.read(loginProvider.notifier).login();
+                },
+          child: const Text('Login'),
+        ),
       ),
     );
   }

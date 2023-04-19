@@ -12,6 +12,7 @@ final userServiceProvider = Provider((ref) => UserService(ref));
 class UserService {
   static const prefix = 'users';
   final Ref ref;
+  StreamSubscription? fcmSubscription;
 
   UserService(this.ref);
 
@@ -33,14 +34,29 @@ class UserService {
       credential = await firebaseAuth.signInWithCredential(oauth);
     }
     final user = credential.user!;
+    final firebaseMessaging = ref.read(firebaseMessagingProvider);
+    await firebaseMessaging.requestPermission();
+    final fcmToken = await firebaseMessaging.getToken(
+        vapidKey:
+            'BCBTAiZ53Yb34xaAgX_zwprwf5qS4R1UdFdDZr4YFQ-cgOJHMHOrUkLqZ7hLqjQK3vI2F683bKjSTw551GI3EDM');
     final member = await getMemberByUid(user.uid);
     if (member == null) {
-      createMember(user);
+      createMember(user, fcmToken: fcmToken);
+    } else {
+      updateFcmToken(uid: user.uid, fcmToken: fcmToken);
     }
+    fcmSubscription?.cancel();
+    fcmSubscription = firebaseMessaging.onTokenRefresh.listen((token) {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      updateFcmToken(uid: user.uid, fcmToken: token);
+    });
     return credential.user!;
   }
 
   Future<void> logout() async {
+    fcmSubscription?.cancel();
+    fcmSubscription = null;
     final firebaseAuth = ref.read(firebaseAuthProvider);
     await firebaseAuth.signOut();
   }

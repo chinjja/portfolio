@@ -75,3 +75,11 @@ class SendMessage extends _$SendMessage {
     });
   }
 }
+
+@Riverpod(keepAlive: true)
+class MemberByUid extends _$MemberByUid {
+  @override
+  FutureOr<Member?> build(String uid) async {
+    return await ref.read(userServiceProvider).getMemberByUid(uid);
+  }
+}

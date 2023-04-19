@@ -21,6 +21,8 @@ class ChatUser with _$ChatUser {
     @Default('') String uid,
     @Default('') String type,
     required String chatId,
+    String? photoUrl,
+    String? displayName,
   }) = _ChatUser;
 
   factory ChatUser.fromJson(Json json) => _$ChatUserFromJson(json);

@@ -36,6 +36,7 @@ class ChatView extends HookConsumerWidget {
     }
     final provider = sendMessageProvider(chatId);
     final messages = ref.watch(getMessagesByChatIdProvider(chatId));
+    final member = ref.watch(memberByUidProvider(user.uid)).valueOrNull;
     ref.listen(provider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
@@ -47,18 +48,29 @@ class ChatView extends HookConsumerWidget {
       loading: () => const LoadingView(),
       error: (error, stackTrace) => Text(error.toString()),
       data: (data) => cu.Chat(
-        messages: data
-            .map((e) => types.TextMessage(
-                  id: e.id,
-                  author: types.User(id: e.uid),
-                  text: e.message,
-                  createdAt: e.date?.millisecondsSinceEpoch,
-                ))
-            .toList(),
+        messages: data.map((e) {
+          final member = ref.watch(memberByUidProvider(e.uid)).valueOrNull;
+          return types.TextMessage(
+            id: e.id,
+            author: types.User(
+              id: e.uid,
+              imageUrl: member?.photoUrl,
+              lastName: member?.displayName,
+            ),
+            text: e.message,
+            createdAt: e.date?.millisecondsSinceEpoch,
+          );
+        }).toList(),
         onSendPressed: (text) {
           ref.read(provider.notifier).send(text.text);
         },
-        user: types.User(id: user.uid),
+        user: types.User(
+          id: user.uid,
+          imageUrl: member?.photoUrl,
+          lastName: member?.displayName,
+        ),
+        showUserAvatars: true,
+        showUserNames: true,
       ),
     );
   }

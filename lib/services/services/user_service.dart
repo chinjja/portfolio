@@ -38,6 +38,10 @@ class UserService {
       );
       credential = await firebaseAuth.signInWithCredential(oauth);
     }
+    final member = await getMemberByUid(credential.user!.uid);
+    if (member == null) {
+      createMember(credential.user!);
+    }
     return credential.user!;
   }
 
@@ -61,12 +65,10 @@ class UserService {
   }
 
   Future<Member> createMember(User user) async {
-    final firebaseMessaging = ref.read(firebaseMessagingProvider);
     final member = Member(
       uid: user.uid,
       displayName: user.displayName,
       photoUrl: user.photoURL,
-      fcmToken: await firebaseMessaging.getToken(),
     );
 
     final firestore = ref.read(firebaseFirestoreProvider);
@@ -78,14 +80,11 @@ class UserService {
     required String uid,
     required String fcmToken,
   }) async {
-    final member = await getMemberByUid(uid);
-    if (member == null) return;
-
     final firestore = ref.read(firebaseFirestoreProvider);
     await firestore
         .collection('members')
-        .doc(member.uid)
-        .set(member.copyWith(fcmToken: fcmToken).toJson());
+        .doc(uid)
+        .update({'fcmToken': fcmToken});
   }
 
   Future<Member?> getMemberByUid(String uid) async {

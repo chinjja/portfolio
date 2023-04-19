@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/providers/providers.dart';
+import 'package:portfolio/services/services.dart';
 import 'package:rxdart/rxdart.dart';
 
 final chatServiceProvider = Provider((ref) => ChatService(ref));
@@ -79,17 +80,23 @@ class ChatService {
     }
     final uuid = ref.read(uuidProvider);
     final chat = Chat(id: uuid.v4(), name: '');
+    final member1 = await ref.read(userServiceProvider).getMemberByUid(uid);
     final user1 = ChatUser(
       id: uuid.v4(),
       uid: uid,
       type: to,
       chatId: chat.id,
+      photoUrl: member1?.photoUrl,
+      displayName: member1?.displayName,
     );
+    final member2 = await ref.read(userServiceProvider).getMemberByUid(to);
     final user2 = ChatUser(
       id: uuid.v4(),
       uid: to,
       type: uid,
       chatId: chat.id,
+      photoUrl: member2?.photoUrl,
+      displayName: member2?.displayName,
     );
     firestore.runTransaction((t) async {
       t.set(firestore.collection(_chats).doc(chat.id), chat.toJson());

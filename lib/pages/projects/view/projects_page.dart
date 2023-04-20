@@ -68,6 +68,44 @@ class Projects extends StatelessWidget {
     final slivers = [
       _item(
         context,
+        title: '어부바 리뉴얼',
+        subtitle: '2023.2 ~ 2023.4 (1인 프로젝트)',
+        readme: 'assets/projects/eobuba/README.md',
+        images: [
+          'assets/projects/eobuba/1.jpg',
+          'assets/projects/eobuba/2.jpg',
+          'assets/projects/eobuba/3.jpg',
+          'assets/projects/eobuba/4.jpg',
+          'assets/projects/eobuba/5.jpg',
+          'assets/projects/eobuba/6.jpg',
+          'assets/projects/eobuba/7.jpg',
+          'assets/projects/eobuba/8.jpg',
+          'assets/projects/eobuba/9.jpg',
+          'assets/projects/eobuba/10.jpg',
+          'assets/projects/eobuba/11.jpg',
+          'assets/projects/eobuba/12.jpg',
+          'assets/projects/eobuba/13.jpg',
+        ],
+        description: '기존 어부바가 앱 및 서버의 버그가 많아서 전체 리뉴얼하게 되었습니다.\n\n'
+            '앱단은 Flutter로 제작하여 AOS와 iOS 모두 지원하게 했습니다.\n'
+            '백단은 Spring Boot로 제작하였습니다.\n\n'
+            'Stomp을 활용해서 양방향 실시간 정보 교환이 되도록 구성.\n'
+            '다중접속시에도 원활히 FCM 알림 가도록 구성.\n\n'
+            '관리자/원장/선생님/학부모 별 권한 및 화면 구성.\n'
+            '50 페이지 이상으로 구성되어 있습니다.',
+        features: {
+          'Frontend': 'Flutter, Riverpod, Fcm, Stomp',
+          'Backend': 'Spring Boot, Maria db, Jpa, Security, JWT, Stomp',
+          '주요기능': '스마트 차량 지도, 전자 출결',
+          'Adnroid':
+              'https://play.google.com/store/apps/details?id=com.joyblock.abuba',
+          'iOS':
+              'https://apps.apple.com/kr/app/%EC%96%B4%EB%B6%80%EB%B0%94/id1368252997',
+          'Github': 'https://github.com/chinjja/portfolio',
+        },
+      ),
+      _item(
+        context,
         title: '설비 제어 및 모니터링 프로그램',
         subtitle: '2011 ~ 2022',
         readme: 'assets/projects/dtk/README.md',
@@ -238,7 +276,7 @@ class Projects extends StatelessWidget {
                 Text(description),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: ElevatedButton(
+                  child: FilledButton.tonal(
                     onPressed: () {
                       MyMarkdownPage.push(
                         context,

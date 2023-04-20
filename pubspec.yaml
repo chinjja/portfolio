@@ -116,6 +116,7 @@ flutter:
     - assets/projects/calendar/
     - assets/projects/daf/
     - assets/projects/instagram/
+    - assets/projects/eobuba/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

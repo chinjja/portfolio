@@ -123,7 +123,7 @@ class Career extends HookConsumerWidget {
             ),
             _block(
               title: '프로그램 관련 모든 부분 담당',
-              subtitle: '2012년 ~ 현재',
+              subtitle: '2012년 ~ 2022년',
               texts: [
                 'Java Swing 기반으로 UI 개발',
                 '각종 디바이스 통신 및 네트워크 통신 개발',

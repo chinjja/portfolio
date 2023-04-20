@@ -19,11 +19,11 @@ class ChatsPage extends HookConsumerWidget {
         actions: [
           if (user != null) ...[
             const _Logout(),
-            const _Add(),
           ],
         ],
       ),
       body: const _ChatList(),
+      extendBodyBehindAppBar: true,
     );
   }
 }
@@ -37,13 +37,68 @@ class _ChatList extends HookConsumerWidget {
     return chats.when(
       loading: () => const LoadingView(),
       error: (error, stackTrace) => Text(error.toString()),
-      data: (data) => ListView.separated(
-        itemCount: data.length,
-        itemBuilder: (context, index) => ChatTile(
-          key: ValueKey(data[index].id),
-          chat: data[index],
-        ),
-        separatorBuilder: (context, index) => const Divider(),
+      data: (data) => data.isEmpty
+          ? const _SendToDeveloper()
+          : ListView.separated(
+              itemCount: data.length,
+              itemBuilder: (context, index) => ChatTile(
+                key: ValueKey(data[index].id),
+                chat: data[index],
+              ),
+              separatorBuilder: (context, index) => const Divider(),
+            ),
+    );
+  }
+}
+
+class _SendToDeveloper extends ConsumerWidget {
+  const _SendToDeveloper();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(getCurrentUserProvider);
+    final provider = createDirectChatProvider(user!.uid);
+    ref.listen(
+      provider,
+      (previous, next) {
+        next.whenOrNull(
+          data: (data) {
+            context.go('/chats/${data!.id}');
+          },
+          error: (error, stackTrace) {
+            context.showSnackbarOk(error.toString());
+          },
+        );
+      },
+    );
+
+    final loading = ref.watch(provider).isLoading;
+    final textTheme = Theme.of(context).textTheme;
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '${user.displayName}님 안녕하세요.',
+            style: textTheme.displaySmall,
+          ),
+          const SizedBox(height: 32),
+          FilledButton.tonalIcon(
+            onPressed: loading
+                ? null
+                : () {
+                    ref.read(provider.notifier).create();
+                  },
+            icon: const Icon(Icons.send, size: 32),
+            label: Text(
+              '개발자에게 메시지 보내기',
+              style: textTheme.titleLarge,
+            ),
+            style: const ButtonStyle(
+              padding: MaterialStatePropertyAll(EdgeInsets.all(20)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -109,41 +164,7 @@ class _Logout extends HookConsumerWidget {
           : () {
               ref.read(logoutProvider.notifier).logout();
             },
-      child: const Text('Logout'),
-    );
-  }
-}
-
-class _Add extends HookConsumerWidget {
-  const _Add({super.key});
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(getCurrentUserProvider);
-    if (user == null) return const SizedBox.shrink();
-
-    final provider = createDirectChatProvider(user.uid);
-    ref.listen(
-      provider,
-      (previous, next) {
-        next.whenOrNull(
-          data: (data) {
-            context.go('/chats/${data!.id}');
-          },
-          error: (error, stackTrace) {
-            context.showSnackbarOk(error.toString());
-          },
-        );
-      },
-    );
-
-    final loading = ref.watch(provider).isLoading;
-    return IconButton(
-      onPressed: loading
-          ? null
-          : () {
-              ref.read(provider.notifier).create();
-            },
-      icon: const Icon(Icons.send),
+      child: const Text('로그아웃'),
     );
   }
 }

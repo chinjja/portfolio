@@ -37,6 +37,7 @@ class DashboardForm extends ConsumerWidget {
           children: [
             FormBuilderTextField(
               name: 'title',
+              maxLines: null,
               decoration: const InputDecoration(labelText: '제목'),
               validator: (value) =>
                   value == null || value.isEmpty ? '제목은 필수 입니다.' : null,

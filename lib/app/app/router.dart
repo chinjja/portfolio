@@ -18,7 +18,7 @@ class AppRouter extends GoRouter {
               routes: [
                 GoRoute(
                   path: '/dashboard',
-                  builder: (context, state) => const DashboardPage(),
+                  builder: (context, state) => DashboardPage(),
                 ),
                 GoRoute(
                   path: '/projects',

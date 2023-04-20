@@ -16,16 +16,55 @@ class LoginPage extends HookConsumerWidget {
       );
     });
     final loading = ref.watch(loginProvider).isLoading;
+    // return Scaffold(
+    //   appBar: AppBar(title: const Text('Portfolio')),
+    //   body: Center(
+    //     child: FilledButton(
+    //       onPressed: loading
+    //           ? null
+    //           : () {
+    //               ref.read(loginProvider.notifier).login();
+    //             },
+    //       child: const Text('Login'),
+    //     ),
+    //   ),
+    // );
     return Scaffold(
-      appBar: AppBar(title: const Text('Portfolio')),
-      body: Center(
-        child: FilledButton(
-          onPressed: loading
-              ? null
-              : () {
-                  ref.read(loginProvider.notifier).login();
-                },
-          child: const Text('Login'),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "PJH's Portfolio👋",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Stack(
+                  children: [
+                    InkWell(
+                      onTap: loading
+                          ? null
+                          : () {
+                              ref.read(loginProvider.notifier).login();
+                            },
+                      child: Image.asset(
+                        'assets/images/google_signin.png',
+                      ),
+                    ),
+                    if (loading)
+                      const Positioned.fill(
+                          child: Center(child: CircularProgressIndicator()))
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

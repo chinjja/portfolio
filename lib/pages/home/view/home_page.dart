@@ -19,7 +19,7 @@ class HomePage extends ConsumerWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _indexOf(location),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.person), label: 'About Me'),
           NavigationDestination(icon: Icon(Icons.list), label: 'Projects'),
           NavigationDestination(icon: Icon(Icons.chat), label: 'Chats'),
         ],

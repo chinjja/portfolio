@@ -1,11 +1,11 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/providers/providers.dart';
-import 'package:portfolio/providers/providers/firebase_messaging_provider.dart';
 
 final userServiceProvider = Provider((ref) => UserService(ref));
 
@@ -13,13 +13,7 @@ class UserService {
   static const prefix = 'users';
   final Ref ref;
 
-  UserService(this.ref) {
-    FirebaseMessaging.instance.onTokenRefresh.listen((token) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
-      updateFcmToken(uid: user.uid, fcmToken: token);
-    });
-  }
+  UserService(this.ref);
 
   Future<User> login() async {
     UserCredential credential;
@@ -38,9 +32,10 @@ class UserService {
       );
       credential = await firebaseAuth.signInWithCredential(oauth);
     }
-    final member = await getMemberByUid(credential.user!.uid);
+    final user = credential.user!;
+    final member = await getMemberByUid(user.uid);
     if (member == null) {
-      createMember(credential.user!);
+      createMember(user);
     }
     return credential.user!;
   }
@@ -64,11 +59,15 @@ class UserService {
         .map((e) => e.data()!['uid']);
   }
 
-  Future<Member> createMember(User user) async {
+  Future<Member> createMember(
+    User user, {
+    String? fcmToken,
+  }) async {
     final member = Member(
       uid: user.uid,
       displayName: user.displayName,
       photoUrl: user.photoURL,
+      fcmToken: fcmToken,
     );
 
     final firestore = ref.read(firebaseFirestoreProvider);
@@ -78,7 +77,7 @@ class UserService {
 
   Future<void> updateFcmToken({
     required String uid,
-    required String fcmToken,
+    required String? fcmToken,
   }) async {
     final firestore = ref.read(firebaseFirestoreProvider);
     await firestore

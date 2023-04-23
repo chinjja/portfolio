@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/providers/providers.dart';
+import 'package:portfolio/services/services.dart';
+import 'package:portfolio/services/services/fcm_service.dart';
 
 final userServiceProvider = Provider((ref) => UserService(ref));
 
@@ -14,7 +16,19 @@ class UserService {
   final Ref ref;
   StreamSubscription? fcmSubscription;
 
-  UserService(this.ref);
+  UserService(this.ref) {
+    final firebaseAuth = ref.read(firebaseAuthProvider);
+    final user = firebaseAuth.currentUser;
+    if (user != null) {
+      final firebaseMessaging = ref.read(firebaseMessagingProvider);
+      firebaseMessaging.requestPermission().then(
+        (value) async {
+          final token = await ref.read(fcmServiceProvider).getToken();
+          updateMember(user, fcmToken: token);
+        },
+      );
+    }
+  }
 
   Future<User> login() async {
     UserCredential credential;
@@ -35,21 +49,17 @@ class UserService {
     }
     final user = credential.user!;
     final firebaseMessaging = ref.read(firebaseMessagingProvider);
+
     await firebaseMessaging.requestPermission();
-    final fcmToken = await firebaseMessaging.getToken(
-        vapidKey:
-            'BCBTAiZ53Yb34xaAgX_zwprwf5qS4R1UdFdDZr4YFQ-cgOJHMHOrUkLqZ7hLqjQK3vI2F683bKjSTw551GI3EDM');
-    final member = await getMemberByUid(user.uid);
-    if (member == null) {
-      createMember(user, fcmToken: fcmToken);
-    } else {
-      updateFcmToken(uid: user.uid, fcmToken: fcmToken);
-    }
+
+    final fcmService = ref.read(fcmServiceProvider);
+    final token = await fcmService.getToken();
+    updateMember(user, fcmToken: token);
     fcmSubscription?.cancel();
-    fcmSubscription = firebaseMessaging.onTokenRefresh.listen((token) {
+    fcmSubscription = fcmService.onTokenRefresh.listen((token) {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
-      updateFcmToken(uid: user.uid, fcmToken: token);
+      updateMember(user, fcmToken: token);
     });
     return credential.user!;
   }
@@ -57,6 +67,10 @@ class UserService {
   Future<void> logout() async {
     fcmSubscription?.cancel();
     fcmSubscription = null;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await updateMember(user, fcmToken: null);
+    }
     final firebaseAuth = ref.read(firebaseAuthProvider);
     await firebaseAuth.signOut();
   }
@@ -75,7 +89,7 @@ class UserService {
         .map((e) => e.data()!['uid']);
   }
 
-  Future<Member> createMember(
+  Future<Member> updateMember(
     User user, {
     String? fcmToken,
   }) async {
@@ -88,18 +102,8 @@ class UserService {
 
     final firestore = ref.read(firebaseFirestoreProvider);
     await firestore.collection('members').doc(member.uid).set(member.toJson());
+    ref.read(chatServiceProvider).updateFcmToken(user, fcmToken: fcmToken);
     return member;
-  }
-
-  Future<void> updateFcmToken({
-    required String uid,
-    required String? fcmToken,
-  }) async {
-    final firestore = ref.read(firebaseFirestoreProvider);
-    await firestore
-        .collection('members')
-        .doc(uid)
-        .update({'fcmToken': fcmToken});
   }
 
   Future<Member?> getMemberByUid(String uid) async {

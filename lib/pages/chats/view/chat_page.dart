@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/pages.dart';
@@ -37,6 +38,8 @@ class ChatView extends HookConsumerWidget {
     final provider = sendMessageProvider(chatId);
     final messages = ref.watch(getMessagesByChatIdProvider(chatId));
     final member = ref.watch(memberByUidProvider(user.uid)).valueOrNull;
+    final chatUsers =
+        ref.watch(getChatUserMapByChatIdProvider(chatId)).valueOrNull ?? {};
     ref.listen(provider, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
@@ -44,18 +47,29 @@ class ChatView extends HookConsumerWidget {
         },
       );
     });
+    ref.listen(
+      onChatIdProvider,
+      (previous, next) {},
+    );
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        ref.read(onChatIdProvider.notifier).setChatId(chatId);
+      });
+      return null;
+    }, []);
     return messages.when(
       loading: () => const LoadingView(),
       error: (error, stackTrace) => Text(error.toString()),
       data: (data) => cu.Chat(
-        messages: data.map((e) {
-          final member = ref.watch(memberByUidProvider(e.uid)).valueOrNull;
+        isLastPage: data.isEndReached,
+        messages: data.messages.map((e) {
+          final chatUser = chatUsers[e.uid];
           return types.TextMessage(
             id: e.id,
             author: types.User(
               id: e.uid,
-              imageUrl: member?.photoUrl,
-              lastName: member?.displayName,
+              imageUrl: chatUser?.photoUrl,
+              lastName: chatUser?.displayName,
             ),
             text: e.message,
             createdAt: e.date?.millisecondsSinceEpoch,
@@ -63,6 +77,11 @@ class ChatView extends HookConsumerWidget {
         }).toList(),
         onSendPressed: (text) {
           ref.read(provider.notifier).send(text.text);
+        },
+        onEndReached: () async {
+          await ref
+              .read(getMessagesByChatIdProvider(chatId).notifier)
+              .fetchMore();
         },
         user: types.User(
           id: user.uid,

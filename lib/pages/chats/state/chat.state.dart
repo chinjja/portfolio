@@ -1,6 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/services/services.dart';
+import 'package:portfolio/services/services/fcm_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:tuple/tuple.dart';
 
@@ -48,11 +50,42 @@ class CreateDirectChat extends _$CreateDirectChat {
   }
 }
 
+final isEndReachedProvider = StateProvider.autoDispose((ref) => false);
+
 @riverpod
 class GetMessagesByChatId extends _$GetMessagesByChatId {
   @override
-  Stream<List<ChatMessage>> build(String chatId) {
-    return ref.read(chatServiceProvider).watchMessages(chatId: chatId);
+  Future<ChatMessageList> build(String chatId) async {
+    ref.listen(getLatestMessagesByChatIdProvider(chatId), (previous, next) {
+      state.whenData((value) {
+        state = AsyncValue.data(value.appendToFront(next.requireValue!));
+      });
+    });
+    final messages = await ref
+        .read(chatServiceProvider)
+        .getRawMessages(chatId: chatId, limit: 25);
+    return ChatMessageList(
+      messages: messages.map((e) => ChatMessage.fromJson(e.data()!)).toList(),
+      isEndReached: messages.length < 25,
+      cursor: messages.isEmpty ? null : messages.last,
+    );
+  }
+
+  Future<void> fetchMore() async {
+    final value = state.valueOrNull;
+    if (value == null || value.isEndReached) return;
+
+    final messages = await ref
+        .read(chatServiceProvider)
+        .getRawMessages(cursor: value.cursor, chatId: chatId, limit: 25);
+
+    state = AsyncValue.data(
+      value.append(
+        messages.map((e) => ChatMessage.fromJson(e.data()!)).toList(),
+        isEndReached: messages.length < 25,
+        cursor: messages.isEmpty ? value.cursor : messages.last,
+      ),
+    );
   }
 }
 
@@ -75,11 +108,26 @@ class SendMessage extends _$SendMessage {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       final user = ref.read(getCurrentUserProvider);
-      return ref.read(chatServiceProvider).sendMessage(
+      final res = ref.read(chatServiceProvider).sendMessage(
             chatId: chatId,
             uid: user!.uid,
             message: message,
           );
+      final users = await ref.read(getChatUsersByChatIdProvider(chatId).future);
+      final tokens = users
+          .map((e) => e.fcmToken)
+          .where((e) => e != null)
+          .cast<String>()
+          .toList();
+      if (tokens.isNotEmpty) {
+        ref.read(fcmServiceProvider).send(
+              userTokens: tokens,
+              title: '${user.displayName}님이 메시지를 보냈습니다.',
+              body: message,
+              chatId: chatId,
+            );
+      }
+      return res;
     });
   }
 }
@@ -97,6 +145,15 @@ class GetChatUsersByChatId extends _$GetChatUsersByChatId {
   @override
   Stream<List<ChatUser>> build(String chatId) {
     return ref.read(chatServiceProvider).watchChatUsersByChatId(chatId: chatId);
+  }
+}
+
+@riverpod
+class GetChatUserMapByChatId extends _$GetChatUserMapByChatId {
+  @override
+  Future<Map<String, ChatUser>> build(String chatId) async {
+    final list = await ref.watch(getChatUsersByChatIdProvider(chatId).future);
+    return list.asMap().map((key, value) => MapEntry(value.uid, value));
   }
 }
 

@@ -278,10 +278,7 @@ class Projects extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: FilledButton.tonal(
                     onPressed: () {
-                      MyMarkdownPage.push(
-                        context,
-                        readme,
-                      );
+                      context.push('/markdown/${Uri.encodeComponent(readme)}');
                     },
                     child: const Text('자세히 보기'),
                   ),
@@ -336,50 +333,6 @@ class Projects extends StatelessWidget {
         ),
       );
     });
-  }
-}
-
-class MyMarkdownPage extends StatelessWidget {
-  const MyMarkdownPage({Key? key, required this.path}) : super(key: key);
-  final String path;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(path.substring(path.lastIndexOf('/') + 1)),
-      ),
-      body: FutureBuilder<String>(
-          future: rootBundle.loadString(path),
-          builder: (context, snapshot) {
-            final data = snapshot.data;
-            if (data == null) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return Markdown(
-              data: data,
-              selectable: true,
-              onTapLink: (text, href, title) {
-                if (href != null) {
-                  launchUrlString(href);
-                }
-              },
-            );
-          }),
-    );
-  }
-
-  static Future<T?> push<T>(BuildContext context, String path) async {
-    return await Navigator.push<T>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MyMarkdownPage(
-          path: path,
-        ),
-      ),
-    );
   }
 }
 

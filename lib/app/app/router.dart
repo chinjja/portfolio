@@ -59,6 +59,13 @@ class AppRouter extends GoRouter {
               path: '/login',
               builder: (context, state) => const LoginPage(),
             ),
+            GoRoute(
+              parentNavigatorKey: _root,
+              path: '/markdown/:path',
+              builder: (context, state) => MarkdownPage(
+                path: Uri.decodeComponent(state.params['path']!),
+              ),
+            ),
           ],
           redirect: (context, state) {
             final subloc = state.subloc;

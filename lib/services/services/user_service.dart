@@ -17,18 +17,30 @@ class UserService {
   StreamSubscription? fcmSubscription;
 
   UserService(this.ref) {
-    final firebaseAuth = ref.read(firebaseAuthProvider);
-    final user = firebaseAuth.currentUser;
-    if (user != null) {
-      final firebaseMessaging = ref.read(firebaseMessagingProvider);
-      firebaseMessaging.requestPermission().then(
-        (value) async {
-          final token = await ref.read(fcmServiceProvider).getToken();
-          updateMember(user, fcmToken: token);
-        },
-      );
-    }
+    authStateChanges().listen((user) {
+      if (user != null) {
+        _initialize(user);
+      }
+    });
   }
+
+  Future<void> _initialize(User user) async {
+    await ref.read(firebaseMessagingProvider).requestPermission();
+
+    final token = await ref.read(fcmServiceProvider).getToken();
+    updateMember(user, fcmToken: token);
+    fcmSubscription?.cancel();
+
+    final fcmService = ref.read(fcmServiceProvider);
+    fcmSubscription = fcmService.onTokenRefresh.listen((token) {
+      final user = currentUser;
+      if (user == null) return;
+      updateMember(user, fcmToken: token);
+    });
+  }
+
+  Stream<User?> authStateChanges() =>
+      ref.read(firebaseAuthProvider).authStateChanges();
 
   Future<User> login() async {
     UserCredential credential;
@@ -47,27 +59,13 @@ class UserService {
       );
       credential = await firebaseAuth.signInWithCredential(oauth);
     }
-    final user = credential.user!;
-    final firebaseMessaging = ref.read(firebaseMessagingProvider);
-
-    await firebaseMessaging.requestPermission();
-
-    final fcmService = ref.read(fcmServiceProvider);
-    final token = await fcmService.getToken();
-    updateMember(user, fcmToken: token);
-    fcmSubscription?.cancel();
-    fcmSubscription = fcmService.onTokenRefresh.listen((token) {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
-      updateMember(user, fcmToken: token);
-    });
     return credential.user!;
   }
 
   Future<void> logout() async {
     fcmSubscription?.cancel();
     fcmSubscription = null;
-    final user = FirebaseAuth.instance.currentUser;
+    final user = currentUser;
     if (user != null) {
       await updateMember(user, fcmToken: null);
     }
@@ -75,10 +73,7 @@ class UserService {
     await firebaseAuth.signOut();
   }
 
-  Stream<User?> get user {
-    final firebaseAuth = ref.read(firebaseAuthProvider);
-    return firebaseAuth.authStateChanges();
-  }
+  User? get currentUser => ref.read(firebaseAuthProvider).currentUser;
 
   Stream<String> get ownerUid {
     final firestore = ref.read(firebaseFirestoreProvider);

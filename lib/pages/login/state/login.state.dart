@@ -10,13 +10,14 @@ part 'login.state.g.dart';
 class GetCurrentUser extends _$GetCurrentUser {
   @override
   User? build() {
-    final d = FirebaseAuth.instance.authStateChanges().listen((event) {
+    final userService = ref.read(userServiceProvider);
+    final d = userService.authStateChanges().listen((event) {
       state = event;
     });
     ref.onDispose(() {
       d.cancel();
     });
-    return FirebaseAuth.instance.currentUser;
+    return userService.currentUser;
   }
 }
 

@@ -101,7 +101,6 @@ class Projects extends StatelessWidget {
               'https://play.google.com/store/apps/details?id=com.joyblock.abuba',
           'iOS':
               'https://apps.apple.com/kr/app/%EC%96%B4%EB%B6%80%EB%B0%94/id1368252997',
-          'Github': 'https://github.com/chinjja/portfolio',
         },
       ),
       _item(

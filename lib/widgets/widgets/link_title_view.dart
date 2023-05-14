@@ -34,18 +34,18 @@ class LinkTitle extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Container(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: color),
+              ),
+            ),
             child: Text(
               title,
               style: TextStyle(
                 color: color,
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(color: color),
               ),
             ),
           ),

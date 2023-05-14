@@ -4,7 +4,6 @@ import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/services/services.dart';
 import 'package:portfolio/services/services/fcm_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:tuple/tuple.dart';
 
 part 'chat.state.g.dart';
 

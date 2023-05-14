@@ -1,7 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/home/view/home_page.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

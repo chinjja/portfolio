@@ -104,9 +104,9 @@ class Header extends HookConsumerWidget {
                                 duration: const Duration(milliseconds: 250),
                               );
                             },
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text(
                             '더 알아보기',
                             style: TextStyle(

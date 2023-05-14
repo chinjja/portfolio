@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:portfolio/models/models.dart';
 import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/widgets/widgets.dart';
 import 'package:sliver_tools/sliver_tools.dart';

@@ -81,8 +81,8 @@ class SkillsView extends HookConsumerWidget {
   }
 
   Widget _flutterLogo() {
-    return Row(
-      children: const [
+    return const Row(
+      children: [
         FlutterLogo(size: 70),
         Text(
           'Flutter',

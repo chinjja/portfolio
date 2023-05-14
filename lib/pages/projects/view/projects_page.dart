@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/pages.dart';
 import 'package:portfolio/widgets/widgets.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -281,7 +282,7 @@ class Projects extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   child: FilledButton.tonal(
                     onPressed: () {
-                      context.push('/markdown/${Uri.encodeComponent(readme)}');
+                      MarkdownRoute(path: readme).push(context);
                     },
                     child: const Text('자세히 보기'),
                   ),

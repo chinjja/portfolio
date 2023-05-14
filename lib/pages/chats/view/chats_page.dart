@@ -63,7 +63,7 @@ class _SendToDeveloper extends ConsumerWidget {
       (previous, next) {
         next.whenOrNull(
           data: (data) {
-            context.go('/chats/${data!.id}');
+            ChatRoute(chatId: data!.id).go(context);
           },
           error: (error, stackTrace) {
             context.showSnackbarOk(error.toString());
@@ -137,7 +137,7 @@ class ChatTile extends HookConsumerWidget {
       ),
       subtitle: Text(latestMessage?.message ?? '', maxLines: 1),
       onTap: () {
-        context.go('/chats/${chat.id}');
+        ChatRoute(chatId: chat.id).go(context);
       },
     );
   }

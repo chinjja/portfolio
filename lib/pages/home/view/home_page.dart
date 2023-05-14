@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/pages.dart';
 
 class HomePage extends ConsumerWidget {
@@ -69,7 +70,7 @@ class NotificationDialog extends HookConsumerWidget {
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).pop();
-          context.go('/chats/$chatId');
+          ChatRoute(chatId: chatId).go(context);
         },
         child: Card(
           elevation: 4,

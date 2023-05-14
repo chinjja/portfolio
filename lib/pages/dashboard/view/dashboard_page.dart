@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:portfolio/pages/dashboard/view/dashboard_form.dart';
+import 'package:portfolio/app/app/router.dart';
 import 'package:portfolio/pages/pages.dart';
 
 class DashboardPage extends HookConsumerWidget {
@@ -42,13 +42,7 @@ class DashboardPage extends HookConsumerWidget {
                 IconButton(
                   onPressed: () {
                     final dashboard = ref.read(dashboardsProvider).requireValue;
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            DashboardForm(initialValue: dashboard),
-                      ),
-                    );
+                    DashboardFormRoute($extra: dashboard).push(context);
                   },
                   icon: const Icon(Icons.edit),
                 ),

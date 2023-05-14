@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:portfolio/app/app.dart';
 import 'package:portfolio/pages/pages.dart';
@@ -15,19 +16,6 @@ class LoginPage extends HookConsumerWidget {
       );
     });
     final loading = ref.watch(loginProvider).isLoading;
-    // return Scaffold(
-    //   appBar: AppBar(title: const Text('Portfolio')),
-    //   body: Center(
-    //     child: FilledButton(
-    //       onPressed: loading
-    //           ? null
-    //           : () {
-    //               ref.read(loginProvider.notifier).login();
-    //             },
-    //       child: const Text('Login'),
-    //     ),
-    //   ),
-    // );
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -60,6 +48,13 @@ class LoginPage extends HookConsumerWidget {
                       const Positioned.fill(
                           child: Center(child: CircularProgressIndicator()))
                   ],
+                ),
+                const SizedBox(height: 32),
+                TextButton(
+                  onPressed: () {
+                    context.go('/');
+                  },
+                  child: const Text('홈으로 돌아가기'),
                 ),
               ],
             ),

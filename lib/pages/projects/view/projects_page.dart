@@ -84,12 +84,17 @@ class Projects extends StatelessWidget {
           'assets/projects/eobuba/13.jpg',
         ],
         description: '기존 어부바가 앱 및 서버의 버그가 많아서 전체 리뉴얼하게 되었습니다.\n\n'
-            '앱단은 Flutter로 제작하여 AOS와 iOS 모두 지원하게 했습니다.\n'
+            '앱단은 Flutter로 제작하여 AOS와 iOS, Web 모두 지원하게 했습니다.\n'
             '백단은 Spring Boot로 제작하였습니다.\n\n'
             'Stomp을 활용해서 양방향 실시간 정보 교환이 되도록 구성.\n'
             '다중접속시에도 원활히 FCM 알림 가도록 구성.\n\n'
-            '관리자/원장/선생님/학부모 별 권한 및 화면 구성.\n'
-            '50 페이지 이상으로 구성되어 있습니다.',
+            '- 관리자/원장/선생님/학부모 별 권한 및 화면 구성.\n'
+            '- 도착 전 알림.\n'
+            '- 실시간 위치 공유.\n'
+            '- 스마트 차량 지도.\n\n'
+            '50 페이지 이상으로 구성되어 있습니다.\n\n'
+            '테스트 계정: xxalflaxx@naver.com\n'
+            '테스트 비번: 12345678',
         features: {
           'Frontend': 'Flutter, Riverpod, Fcm, Stomp',
           'Backend': 'Spring Boot, Maria db, Jpa, Security, JWT, Stomp',
@@ -98,6 +103,8 @@ class Projects extends StatelessWidget {
               'https://play.google.com/store/apps/details?id=com.joyblock.abuba',
           'iOS':
               'https://apps.apple.com/kr/app/%EC%96%B4%EB%B6%80%EB%B0%94/id1368252997',
+          'Web': 'https://eobuba-46c61.web.app',
+          'Homepage': 'https://eobuba.co.kr',
         },
       ),
       _item(

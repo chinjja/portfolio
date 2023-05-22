@@ -33,7 +33,9 @@ class _ChatList extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(getCurrentUserProvider);
-    final chats = ref.watch(getChatsByUidProvider(user!.uid));
+    if (user == null) return const SizedBox.shrink();
+
+    final chats = ref.watch(getChatsByUidProvider(user.uid));
     return chats.when(
       loading: () => const LoadingView(),
       error: (error, stackTrace) => Text(error.toString()),

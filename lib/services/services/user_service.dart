@@ -8,6 +8,7 @@ import 'package:portfolio/models/models.dart';
 import 'package:portfolio/providers/providers.dart';
 import 'package:portfolio/services/services.dart';
 import 'package:portfolio/services/services/fcm_service.dart';
+import 'package:rxdart/rxdart.dart';
 
 final userServiceProvider = Provider((ref) => UserService(ref));
 
@@ -17,7 +18,7 @@ class UserService {
   StreamSubscription? fcmSubscription;
 
   UserService(this.ref) {
-    authStateChanges().listen((user) {
+    authStateChanges().throttleTime(const Duration(seconds: 1)).listen((user) {
       if (user != null) {
         _initialize(user);
       }
